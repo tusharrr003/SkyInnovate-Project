@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Expense Tracker</title>
+    <!-- Modern Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="dashboard-header">
+            <h1>Expense Tracker</h1>
+            <div class="balance-container">
+                <h4>Total Balance</h4>
+                <h2 id="balance">₹0.00</h2>
+            </div>
+            <div class="summary-cards">
+                <div class="card income-card">
+                    <h4>Income</h4>
+                    <p id="money-plus" class="money plus">+₹0.00</p>
+                </div>
+                <div class="card expense-card">
+                    <h4>Expense</h4>
+                    <p id="money-minus" class="money minus">-₹0.00</p>
+                </div>
+            </div>
+        </header>
+
+        <main class="dashboard-content">
+            <section class="add-transaction-section glass-panel">
+                <h3>Add New Transaction</h3>
+                <form id="form">
+                    <div class="form-control">
+                        <label for="text">Transaction Name</label>
+                        <input type="text" id="text" placeholder="e.g. Salary, Rent, Coffee" autocomplete="off" />
+                    </div>
+                    <div class="form-control">
+                        <label for="amount">Amount <br /><small>(negative - expense, positive + income)</small></label>
+                        <input type="number" id="amount" placeholder="Enter amount..." step="0.01" />
+                    </div>
+                    <button class="btn primary-btn" type="submit">Add Transaction</button>
+                </form>
+            </section>
+
+            <section class="history-section glass-panel">
+                <h3>Transaction History</h3>
+                <ul id="list" class="list">
+                    <!-- Transactions will be inserted here dynamically -->
+                </ul>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
