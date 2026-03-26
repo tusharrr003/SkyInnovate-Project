@@ -191,7 +191,7 @@ form {
     font-size: 0.8rem;
 }
 
-input[type="text"], input[type="number"] {
+input[type="text"], input[type="number"], select {
     width: 100%;
     padding: 1rem;
     background: rgba(13, 17, 23, 0.8);
@@ -203,7 +203,7 @@ input[type="text"], input[type="number"] {
     transition: var(--transition);
 }
 
-input[type="text"]:focus, input[type="number"]:focus {
+input[type="text"]:focus, input[type="number"]:focus, select:focus {
     outline: none;
     border-color: #6366f1;
     background: #0d1117;
@@ -333,4 +333,50 @@ input[type="text"]:focus, input[type="number"]:focus {
     0%, 100% { transform: translateX(0); }
     25% { transform: translateX(-5px); }
     75% { transform: translateX(5px); }
+}
+
+/* Radio Button Toggles */
+.type-toggle {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.type-toggle input[type="radio"] {
+    display: none;
+}
+
+.toggle-btn {
+    flex: 1;
+    text-align: center;
+    padding: 0.8rem;
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: var(--transition);
+    background: rgba(13, 17, 23, 0.8);
+    color: var(--text-color);
+}
+
+#type-income:checked + .income-btn {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: var(--income-color);
+    color: var(--income-color);
+}
+
+#type-expense:checked + .expense-btn {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: var(--expense-color);
+    color: var(--expense-color);
+}
+
+select {
+    appearance: none;
+    cursor: pointer;
+}
+
+select option {
+    background: var(--bg-color);
+    color: var(--text-color);
 }

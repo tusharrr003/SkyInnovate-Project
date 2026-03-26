@@ -34,13 +34,25 @@
             <section class="add-transaction-section glass-panel">
                 <h3>Add New Transaction</h3>
                 <form id="form">
-                    <div class="form-control">
-                        <label for="text">Transaction Name</label>
-                        <input type="text" id="text" placeholder="e.g. Salary, Rent, Coffee" autocomplete="off" />
+                    <div class="form-control type-toggle">
+                        <input type="radio" id="type-income" name="type" value="income" checked />
+                        <label for="type-income" class="toggle-btn income-btn">Income (+)</label>
+                        <input type="radio" id="type-expense" name="type" value="expense" />
+                        <label for="type-expense" class="toggle-btn expense-btn">Expense (-)</label>
                     </div>
                     <div class="form-control">
-                        <label for="amount">Amount <br /><small>(negative - expense, positive + income)</small></label>
-                        <input type="number" id="amount" placeholder="Enter amount..." step="0.01" />
+                        <label for="category">Category</label>
+                        <select id="category">
+                            <!-- Options updated by JS -->
+                        </select>
+                    </div>
+                    <div class="form-control">
+                        <label for="amount">Amount</label>
+                        <input type="number" id="amount" placeholder="Enter amount..." step="0.01" min="0.01" />
+                    </div>
+                    <div class="form-control">
+                        <label for="text">Description (Optional)</label>
+                        <input type="text" id="text" placeholder="e.g. details..." autocomplete="off" />
                     </div>
                     <button class="btn primary-btn" type="submit">Add Transaction</button>
                 </form>

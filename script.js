@@ -6,6 +6,12 @@ window.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('form');
     const text = document.getElementById('text');
     const amount = document.getElementById('amount');
+    const category = document.getElementById('category');
+    const typeIncome = document.getElementById('type-income');
+    const typeExpense = document.getElementById('type-expense');
+
+    const incomeCategories = ['Salary', 'Pocket Money', 'Other'];
+    const expenseCategories = ['Food', 'Travel', 'Other'];
 
     // Load data from LocalStorage
     const localStorageTransactions = JSON.parse(
@@ -15,21 +21,44 @@ window.addEventListener('DOMContentLoaded', () => {
     let transactions =
         localStorage.getItem('transactions') !== null ? localStorageTransactions : [];
 
+    // Dynamically update categories based on type selection
+    function updateCategories() {
+        const type = typeIncome.checked ? 'income' : 'expense';
+        const categories = type === 'income' ? incomeCategories : expenseCategories;
+        
+        category.innerHTML = '';
+        categories.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat;
+            option.innerText = cat;
+            category.appendChild(option);
+        });
+    }
+
+    typeIncome.addEventListener('change', updateCategories);
+    typeExpense.addEventListener('change', updateCategories);
+    
     // Add transaction logic
     function addTransaction(e) {
         e.preventDefault();
 
-        if (text.value.trim() === '' || amount.value.trim() === '') {
+        if (amount.value.trim() === '' || +amount.value <= 0) {
             // Apply error shake class
             form.classList.add('error-state');
             setTimeout(() => form.classList.remove('error-state'), 400);
             return;
         }
 
+        const isIncome = typeIncome.checked;
+        const finalAmount = isIncome ? +amount.value : -Math.abs(+amount.value);
+        
+        const description = text.value.trim();
+        const transactionText = description ? `${category.value} (${description})` : category.value;
+
         const transaction = {
             id: generateID(),
-            text: text.value,
-            amount: +amount.value // Parse to number
+            text: transactionText,
+            amount: finalAmount
         };
 
         transactions.push(transaction);
@@ -41,7 +70,7 @@ window.addEventListener('DOMContentLoaded', () => {
         // Reset fields
         text.value = '';
         amount.value = '';
-        text.focus(); // Focus back to text easily
+        amount.focus(); // Focus back to amount since it's the primary input
     }
 
     // Generate random internal ID
@@ -109,6 +138,7 @@ window.addEventListener('DOMContentLoaded', () => {
         // Loop through all data to rebuild list
         transactions.forEach(addTransactionDOM);
         updateValues();
+        updateCategories();
     }
 
     // Initial Load function call
