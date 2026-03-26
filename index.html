@@ -8,8 +8,35 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h2>Expense Tracker</h2>
+
+    <!-- Auth Screen -->
+    <div id="auth-container" class="container auth-wrapper">
+        <div class="card auth-card">
+            <h2 id="auth-title">Login</h2>
+            <form id="auth-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" placeholder="Enter username" required />
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter password" required />
+                </div>
+                <button class="btn" type="submit" id="auth-submit-btn">Login</button>
+            </form>
+            <p class="auth-switch">
+                <span id="auth-switch-text">Don't have an account?</span>
+                <a href="#" id="auth-switch-link">Sign Up</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div class="container hidden" id="app-container">
+        <div class="app-header">
+            <h2>Expense Tracker</h2>
+            <button class="btn-logout" id="logout-btn">Logout (<span id="current-user-name"></span>)</button>
+        </div>
 
         <div class="balance-board card">
             <h4>Your Balance</h4>
@@ -32,12 +59,11 @@
                 <h3>Add New Transaction</h3>
                 <form id="form">
                     <div class="form-group type-toggles">
-                        <label>
-                            <input type="radio" name="type" value="income" checked id="type-income"> Income
-                        </label>
-                        <label>
-                            <input type="radio" name="type" value="expense" id="type-expense"> Expense
-                        </label>
+                        <input type="radio" name="type" value="income" checked id="type-income">
+                        <label for="type-income" class="toggle-btn income-toggle">+ Income</label>
+                        
+                        <input type="radio" name="type" value="expense" id="type-expense">
+                        <label for="type-expense" class="toggle-btn expense-toggle">- Expense</label>
                     </div>
 
                     <div class="form-group">

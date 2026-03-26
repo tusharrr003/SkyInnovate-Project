@@ -1,4 +1,18 @@
 window.addEventListener('DOMContentLoaded', () => {
+    // Auth Elements
+    const authContainer = document.getElementById('auth-container');
+    const appContainer = document.getElementById('app-container');
+    const authForm = document.getElementById('auth-form');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const authTitle = document.getElementById('auth-title');
+    const authSubmitBtn = document.getElementById('auth-submit-btn');
+    const authSwitchLink = document.getElementById('auth-switch-link');
+    const authSwitchText = document.getElementById('auth-switch-text');
+    const logoutBtn = document.getElementById('logout-btn');
+    const currentUserNameDisplay = document.getElementById('current-user-name');
+
+    // App Elements
     const balance = document.getElementById('balance');
     const money_plus = document.getElementById('money-plus');
     const money_minus = document.getElementById('money-minus');
@@ -14,14 +28,114 @@ window.addEventListener('DOMContentLoaded', () => {
     const periodMoneyPlus = document.getElementById('period-money-plus');
     const periodMoneyMinus = document.getElementById('period-money-minus');
 
-    // Default date to today
-    dateInput.valueAsDate = new Date();
+    // --- State Variables ---
+    let transactions = [];
+    let isLoginMode = true;
+    let currentUser = null;
 
     const incomeCategories = ['Salary', 'Pocket Money', 'Other'];
     const expenseCategories = ['Food', 'Travel', 'Other'];
 
-    const localStorageTransactions = JSON.parse(localStorage.getItem('transactions'));
-    let transactions = localStorage.getItem('transactions') !== null ? localStorageTransactions : [];
+    // --- AUTHENTICATION LOGIC ---
+    const users = JSON.parse(localStorage.getItem('expense_users')) || [];
+
+    authSwitchLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        isLoginMode = !isLoginMode;
+        if (isLoginMode) {
+            authTitle.innerText = 'Login';
+            authSubmitBtn.innerText = 'Login';
+            authSwitchText.innerText = "Don't have an account?";
+            authSwitchLink.innerText = 'Sign Up';
+        } else {
+            authTitle.innerText = 'Sign Up';
+            authSubmitBtn.innerText = 'Sign Up';
+            authSwitchText.innerText = 'Already have an account?';
+            authSwitchLink.innerText = 'Login';
+        }
+    });
+
+    authForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value;
+
+        if (!username || !password) {
+            alert('Please fill all fields');
+            return;
+        }
+
+        if (isLoginMode) {
+            const user = users.find(u => u.username === username && u.password === password);
+            if (user) {
+                login(user.username);
+            } else {
+                alert('Invalid credentials');
+            }
+        } else {
+            if (users.find(u => u.username === username)) {
+                alert('Username already exists');
+                return;
+            }
+            users.push({ username, password });
+            localStorage.setItem('expense_users', JSON.stringify(users));
+            alert('Signup successful! You can now log in.');
+            
+            // Auto switch back to login
+            authSwitchLink.click();
+            usernameInput.value = username;
+            passwordInput.value = '';
+        }
+    });
+
+    function login(username) {
+        currentUser = username;
+        localStorage.setItem('expense_currentUser', currentUser);
+        
+        // Hide auth, show app
+        authContainer.classList.add('hidden');
+        appContainer.classList.remove('hidden');
+        currentUserNameDisplay.innerText = currentUser;
+        
+        // Default date to today
+        dateInput.valueAsDate = new Date();
+        updateCategories();
+        
+        // Load user-specific transactions
+        loadUserTransactions();
+        
+        // Initialize dashboard
+        init();
+    }
+
+    logoutBtn.addEventListener('click', () => {
+        currentUser = null;
+        localStorage.removeItem('expense_currentUser');
+        transactions = []; // Wipe RAM cache
+        
+        // Show auth, hide app
+        appContainer.classList.add('hidden');
+        authContainer.classList.remove('hidden');
+        
+        usernameInput.value = '';
+        passwordInput.value = '';
+    });
+
+    function loadUserTransactions() {
+        if (!currentUser) return;
+        const key = `transactions_${currentUser}`;
+        const stored = JSON.parse(localStorage.getItem(key));
+        transactions = stored !== null ? stored : [];
+    }
+
+    function updateLocalStorage() {
+        if (!currentUser) return;
+        const key = `transactions_${currentUser}`;
+        localStorage.setItem(key, JSON.stringify(transactions));
+    }
+
+
+    // --- APP LOGIC ---
 
     function updateCategories() {
         const type = typeIncome.checked ? 'income' : 'expense';
@@ -35,7 +149,6 @@ window.addEventListener('DOMContentLoaded', () => {
             datalist.appendChild(option);
         });
 
-        // Reset custom input when switching types if it matches a default category to prevent mixed states
         if (incomeCategories.includes(category.value) || expenseCategories.includes(category.value)) {
             category.value = '';
         }
@@ -43,9 +156,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     typeIncome.addEventListener('change', updateCategories);
     typeExpense.addEventListener('change', updateCategories);
-    updateCategories();
 
-    // Helper functions for dates
     function getWeek(date) {
         const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
         const dayNum = d.getUTCDay() || 7;
@@ -63,8 +174,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
         const filtered = transactions.filter(t => {
             if (!t.date) return true; 
-            
-            // Adjust to local timezone to prevent off-by-one errors when filtering
             const parts = t.date.split('-');
             const tDate = new Date(parts[0], parts[1] - 1, parts[2]);
 
@@ -105,7 +214,6 @@ window.addEventListener('DOMContentLoaded', () => {
         const description = text.value.trim();
         const customCategoryClass = category.value.trim();
         
-        // Use custom category if provided, if description is provided append it.
         const transactionText = description ? `${customCategoryClass} (${description})` : customCategoryClass;
 
         const transaction = {
@@ -118,7 +226,7 @@ window.addEventListener('DOMContentLoaded', () => {
         transactions.push(transaction);
 
         updateLocalStorage();
-        init(); // Re-render everything with the new item
+        init(); 
 
         text.value = '';
         amount.value = '';
@@ -136,7 +244,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
         item.classList.add(transaction.amount < 0 ? 'minus' : 'plus');
 
-        // Formatted date string
         let dateStr = 'No date';
         if (transaction.date) {
             const parts = transaction.date.split('-');
@@ -173,14 +280,9 @@ window.addEventListener('DOMContentLoaded', () => {
         init(); 
     };
 
-    function updateLocalStorage() {
-        localStorage.setItem('transactions', JSON.stringify(transactions));
-    }
-
     function init() {
         list.innerHTML = '';
         
-        // Sort by date descending
         const sorted = [...transactions].sort((a, b) => {
             const dateA = a.date ? new Date(a.date) : new Date(0);
             const dateB = b.date ? new Date(b.date) : new Date(0);
@@ -189,15 +291,20 @@ window.addEventListener('DOMContentLoaded', () => {
 
         sorted.forEach(addTransactionDOM);
         
-        // Top section shows All Time metrics
         updateValues();
-        
-        // Bottom section correctly runs filter to update the period report
         updatePeriodicSummary();
     }
 
+    // --- EVENT LISTENERS ---
     filterSelect.addEventListener('change', updatePeriodicSummary);
     form.addEventListener('submit', addTransaction);
 
-    init();
+    // --- BOOT PROCESS ---
+    const activeSession = localStorage.getItem('expense_currentUser');
+    if (activeSession) {
+        login(activeSession);
+    } else {
+        appContainer.classList.add('hidden');
+        authContainer.classList.remove('hidden');
+    }
 });

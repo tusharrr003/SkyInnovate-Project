@@ -152,7 +152,7 @@ h3 {
     font-size: 14px;
 }
 
-input[type="text"], input[type="number"], input[type="date"], input[list] {
+input[type="text"], input[type="password"], input[type="number"], input[type="date"], input[list] {
     border: 1px solid var(--border-color);
     border-radius: 4px;
     padding: 10px;
@@ -169,15 +169,35 @@ input:focus {
 
 .type-toggles {
     display: flex;
-    gap: 20px;
+    gap: 10px;
 }
 
-.type-toggles label {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-weight: normal;
+.type-toggles input[type="radio"] {
+    display: none;
+}
+
+.toggle-btn {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
     cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+    background-color: #fff;
+}
+
+#type-income:checked + .income-toggle {
+    background-color: #ecfdf5;
+    border-color: var(--plus);
+    color: var(--plus);
+}
+
+#type-expense:checked + .expense-toggle {
+    background-color: #fef2f2;
+    border-color: var(--minus);
+    color: var(--minus);
 }
 
 .btn {
@@ -193,6 +213,7 @@ input:focus {
     border-radius: 4px;
     font-family: inherit;
     transition: background-color 0.2s;
+    font-weight: 500;
 }
 
 .btn:hover {
@@ -267,4 +288,61 @@ input:focus {
 .list li:hover .delete-btn {
     opacity: 1;
     transform: translate(-10px, -50%);
+}
+
+/* AUTHENTICATION STYLES */
+.hidden {
+    display: none !important;
+}
+
+.auth-wrapper {
+    max-width: 400px;
+    margin-top: 10vh;
+}
+
+.auth-card {
+    padding: 30px;
+}
+
+.auth-switch {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.auth-switch a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.auth-switch a:hover {
+    text-decoration: underline;
+}
+
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.app-header h2 {
+    margin-bottom: 0;
+}
+
+.btn-logout {
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.btn-logout:hover {
+    background-color: #f1f5f9;
 }
